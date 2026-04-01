@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Balancer Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4F46E5; /* Indigo */
+            --primary-hover: #4338CA;
+            --bg: #F3F4F6; /* Gray 100 */
+            --card-bg: #FFFFFF;
+            --text-main: #111827; /* Gray 900 */
+            --text-muted: #6B7280; /* Gray 500 */
+            --border: #E5E7EB; /* Gray 200 */
+            --danger: #EF4444; /* Red 500 */
+            --success: #10B981; /* Green 500 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .controls-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input {
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 140px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            height: 42px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .strategy-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .strategy-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .strategy-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background: #D1FAE5; color: var(--success); }
+        .badge-danger { background: #FEE2E2; color: var(--danger); font-weight: bold; animation: pulse 2s infinite; }
+
+        .strategy-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            min-height: 40px; 
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .loader {
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin: 50px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Load Balancer Simulator</h1>
+            <p>Visualize how different traffic distribution algorithms handle uneven web requests. 
+               Watch how routing logic determines whether your servers remain stable or become overloaded.</p>
+        </header>
+
+        <div class="controls-card">
+            <div class="input-group">
+                <label for="num_servers">Servers in cluster</label>
+                <input type="number" id="num_servers" value="4" min="2" max="10">
+            </div>
+            <div class="input-group">
+                <label for="server_capacity">Max Load Capacity</label>
+                <input type="number" id="server_capacity" value="50" min="10" max="200">
+            </div>
+            <div class="input-group">
+                <label for="num_requests">Traffic Spikes (Requests)</label>
+                <input type="number" id="num_requests" value="100" min="10" max="500">
+            </div>
+            <button id="runBtn" onclick="runSimulation()">Start Simulation</button>
+        </div>
+
+        <div id="loader" class="loader">Simulating traffic... Please wait.</div>
+        <div id="results" class="dashboard">
+            <!-- Cards will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        const algorithmDescriptions = {
+            "Round Robin": "Passes requests sequentially to each server in a loop (1→2→3→4→1). Simple, but ignores current server load.",
+            "Least Connections": "Smart routing! Always checks which server is currently the least busy and routes traffic there. Usually avoids bottlenecks.",
+            "Random": "Picks a server purely by chance. Highly unpredictable and frequently causes accidental overloads."
+        };
+
+        async function runSimulation() {
+            const btn = document.getElementById('runBtn');
+            const loader = document.getElementById('loader');
+            const container = document.getElementById('results');
+            
+            btn.innerHTML = "Running...";
+            btn.disabled = true;
+            container.innerHTML = '';
+            loader.style.display = 'block';
+
+            const payload = {
+                num_servers: parseInt(document.getElementById('num_servers').value) || 4,
+                server_capacity: parseInt(document.getElementById('server_capacity').value) || 50,
+                num_requests: parseInt(document.getElementById('num_requests').value) || 100
+            };
+
+            try {
+                const res = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!res.ok) throw new Error("Server returned " + res.status);
+                
+                const data = await res.json();
+                loader.style.display = 'none';
+                renderDashboard(data.results, payload);
+            } catch (err) {
+                console.error("Error:", err);
+                loader.style.display = 'none';
+                alert("Failed to run simulation. Ensure the Python backend is running on the correct port!");
+            } finally {
+                btn.innerHTML = "Start Simulation";
+                btn.disabled = false;
+            }
+        }
+
+        function renderDashboard(results, payload) {
+            const container = document.getElementById('results');
+            
+            // Professional tech color palette
+            const colors = [
+                '#3B82F6', // Blue
+                '#10B981', // Emerald
+                '#F59E0B', // Amber
+                '#8B5CF6', // Purple
+                '#EF4444', // Red
+                '#06B6D4', // Cyan
+                '#F43F5E', // Rose
+                '#84CC16', // Lime
+            ];
+
+            Object.entries(results).forEach(([strategyName, stats]) => {
+                const isOverloaded = stats.overloaded.length > 0;
+                let badgeClass = isOverloaded ? 'badge-danger' : 'badge-success';
+                let badgeText = isOverloaded ? 'OVERLOADED: ' + stats.overloaded.length + ' Servers' : 'STABLE';
+
+                const card = document.createElement('div');
+                card.className = 'strategy-card';
+                card.innerHTML = `
+                    <div class="strategy-header">
+                        <h3 class="strategy-title">${strategyName}</h3>
+                        <span class="strategy-badge ${badgeClass}">${badgeText}</span>
+                    </div>
+                    <p class="strategy-description">${algorithmDescriptions[strategyName] || ''}</p>
+                    <div class="chart-container">
+                        <canvas id="chart-${strategyName.replace(/\s+/g, '')}"></canvas>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                const ctx = document.getElementById(`chart-${strategyName.replace(/\s+/g, '')}`).getContext('2d');
+                
+                const datasets = [];
+                for(let i=0; i<payload.num_servers; i++) {
+                    datasets.push({
+                        label: `Server ${i}`,
+                        data: stats.history.map(snapshot => snapshot[i]),
+                        borderColor: colors[i % colors.length],
+                        backgroundColor: colors[i % colors.length] + '20',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        fill: false,
+                        tension: 0.3 // Smooth curves
+                    });
+                }
+
+                // Add the capacity threshold line
+                datasets.push({
+                    label: 'Max Capacity',
+                    data: Array(payload.num_requests).fill(payload.server_capacity),
+                    borderColor: 'rgba(239, 68, 68, 0.5)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                });
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: payload.num_requests}, (_, i) => i+1),
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { boxWidth: 12, usePointStyle: true, font: {size: 11} }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                max: Math.max(payload.server_capacity * 1.5, ...stats.history.flatMap(s => Object.values(s))),
+                                title: { display: true, text: 'Current Server Load', color: '#6B7280', font: {weight: 'bold'} },
+                                grid: { color: '#F3F4F6' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Incoming Requests (Time →)', color: '#6B7280', font: {weight: 'bold'} },
+                                grid: { display: false }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Run once on initial load
+        window.onload = runSimulation;
+    </script>
+</body>
+</html>
