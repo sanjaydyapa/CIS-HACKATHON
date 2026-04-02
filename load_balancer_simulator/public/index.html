@@ -7,15 +7,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #4F46E5; /* Indigo */
-            --primary-hover: #4338CA;
-            --bg: #F3F4F6; /* Gray 100 */
-            --card-bg: #FFFFFF;
-            --text-main: #111827; /* Gray 900 */
-            --text-muted: #6B7280; /* Gray 500 */
-            --border: #E5E7EB; /* Gray 200 */
-            --danger: #EF4444; /* Red 500 */
-            --success: #10B981; /* Green 500 */
+            /* Modern Dark Theme Variables */
+            --bg-color: #0f172a; /* script slate-900 */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(30, 41, 59, 0.7); /* slate-800 with opacity */
+            --card-border: rgba(255, 255, 255, 0.1);
+            
+            --primary: #8b5cf6; /* violet-500 */
+            --primary-hover: #a78bfa; /* violet-400 */
+            --accent-cyan: #06b6d4; /* cyan-500 */
+            
+            --text-main: #f8fafc; /* slate-50 */
+            --text-muted: #94a3b8; /* slate-400 */
+            
+            --danger: #ef4444; /* red-500 */
+            --danger-bg: rgba(239, 68, 68, 0.15);
+            --success: #10b981; /* emerald-500 */
+            --success-bg: rgba(16, 185, 129, 0.15);
         }
 
         * {
@@ -25,95 +33,108 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
             color: var(--text-main);
             line-height: 1.6;
-            padding: 20px 0;
+            padding: 30px 0;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: auto;
             padding: 0 20px;
         }
 
         header {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             text-align: center;
         }
 
         header h1 {
-            font-size: 2.5rem;
-            color: var(--primary);
+            font-size: 3rem;
+            font-weight: 800;
             margin-bottom: 10px;
+            /* Gradient text effect */
+            background: linear-gradient(to right, #a78bfa, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         header p {
             color: var(--text-muted);
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
             font-size: 1.1rem;
         }
 
         .controls-card {
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 40px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 50px;
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 25px;
             align-items: flex-end;
             justify-content: center;
-            border: 1px solid var(--border);
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .input-group label {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
         }
 
         .input-group input {
-            padding: 10px 15px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-main);
+            padding: 12px 18px;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
             font-size: 1rem;
-            width: 140px;
-            transition: border-color 0.2s;
+            width: 160px;
+            transition: all 0.3s ease;
         }
 
         .input-group input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15);
         }
 
         button {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-cyan) 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 6px;
-            font-size: 1rem;
+            padding: 12px 35px;
+            border-radius: 8px;
+            font-size: 1.05rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            height: 42px;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            height: 48px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
         }
 
         button:hover {
-            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.5);
         }
 
         button:active {
@@ -121,78 +142,102 @@
         }
 
         button:disabled {
-            background: var(--text-muted);
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 35px;
         }
 
         .strategy-card {
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .strategy-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .strategy-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .strategy-title {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .strategy-badge {
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .badge-success { background: #D1FAE5; color: var(--success); }
-        .badge-danger { background: #FEE2E2; color: var(--danger); font-weight: bold; animation: pulse 2s infinite; }
+        .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); animation: pulse 2s infinite; }
 
         .strategy-description {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
-            margin-bottom: 20px;
-            min-height: 40px; 
+            margin-bottom: 25px;
+            min-height: 48px; 
+            line-height: 1.5;
         }
 
         .chart-container {
             position: relative;
-            height: 250px;
+            height: 280px;
             width: 100%;
             margin-top: auto;
         }
 
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         .loader {
             text-align: center;
-            font-weight: bold;
-            color: var(--primary);
+            font-weight: 600;
+            color: var(--accent-cyan);
             font-size: 1.2rem;
             margin: 50px 0;
             display: none;
+            letter-spacing: 0.05em;
+            animation: breathe 1.5s infinite alternate;
         }
+        
+        @keyframes breathe {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+        
+        /* Stylize scrollbars */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
 <body>
@@ -344,7 +389,7 @@
                         plugins: {
                             legend: {
                                 position: 'bottom',
-                                labels: { boxWidth: 12, usePointStyle: true, font: {size: 11} }
+                                labels: { boxWidth: 12, usePointStyle: true, font: {size: 11}, color: '#cbd5e1' }
                             },
                             tooltip: {
                                 mode: 'index',
@@ -355,12 +400,14 @@
                             y: { 
                                 beginAtZero: true,
                                 max: Math.max(payload.server_capacity * 1.5, ...stats.history.flatMap(s => Object.values(s))),
-                                title: { display: true, text: 'Current Server Load', color: '#6B7280', font: {weight: 'bold'} },
-                                grid: { color: '#F3F4F6' }
+                                title: { display: true, text: 'Current Server Load', color: '#94a3b8', font: {weight: 'bold'} },
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: '#94a3b8' }
                             },
                             x: {
-                                title: { display: true, text: 'Incoming Requests (Time →)', color: '#6B7280', font: {weight: 'bold'} },
-                                grid: { display: false }
+                                title: { display: true, text: 'Incoming Requests (Time →)', color: '#94a3b8', font: {weight: 'bold'} },
+                                grid: { display: false },
+                                ticks: { color: '#94a3b8' }
                             }
                         },
                         interaction: {
