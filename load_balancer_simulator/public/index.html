@@ -152,8 +152,16 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            /* Force exactly 3 columns so they always sit side-by-side */
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
+        }
+
+        /* Make it responsive: stack on smaller laptop/tablet screens */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
         }
 
         .strategy-card {
