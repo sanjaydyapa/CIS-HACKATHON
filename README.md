@@ -39,6 +39,7 @@ By passing identical traffic through three different load balancers, the dashboa
 
 4. **Open the Dashboard:**  
    Open your browser and navigate to exactly: **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
+   *(Note: `127.0.0.1` means your own local computer. If you just want to see the finished project without installing anything, click the live [Vercel Deployment Link](https://cis-hackathon-one.vercel.app/) at the top of this page instead!)*
 
 ## 🗂️ Project Structure
 
